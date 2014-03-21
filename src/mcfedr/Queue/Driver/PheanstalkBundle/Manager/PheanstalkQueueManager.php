@@ -87,7 +87,8 @@ class PheanstalkQueueManager implements QueueManager
     /**
      * Remove a job, you should call this when you have finished processing a job
      *
-     * @param $job
+     * @param \mcfedr\Queue\QueueManagerBundle\Queue\Job $job
+     * @throws \mcfedr\Queue\QueueManagerBundle\Exception\WrongJobException
      */
     public function delete(Job $job)
     {
