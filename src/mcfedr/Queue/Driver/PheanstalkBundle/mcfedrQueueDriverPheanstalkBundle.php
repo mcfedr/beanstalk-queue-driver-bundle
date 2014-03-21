@@ -1,6 +1,6 @@
 <?php
 
-namespace mcfedr\Queue\QueueManagerBundle;
+namespace mcfedr\Queue\Driver\PheanstalkBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
