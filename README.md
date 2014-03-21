@@ -1,15 +1,15 @@
-# Queue Bundle
+# Pheanstalk Queue Driver Bundle
 
-A bundle for accessing job queues
+A driver for [Queue Manager Bundle](https://github.com/mcfedr/queue-manager-bundle) that uses beanstalkd
 
-[![Latest Stable Version](https://poser.pugx.org/mcfedr/queuebundle/v/stable.png)](https://packagist.org/packages/mcfedr/queuebundle)
-[![License](https://poser.pugx.org/mcfedr/queuebundle/license.png)](https://packagist.org/packages/mcfedr/queuebundle)
+[![Latest Stable Version](https://poser.pugx.org/mcfedr/queue-driver-pheanstalk-bundle/v/stable.png)](https://packagist.org/packages/mcfedr/queue-driver-pheanstalk-bundle)
+[![License](https://poser.pugx.org/mcfedr/queue-driver-pheanstalk-bundle/license.png)](https://packagist.org/packages/mcfedr/queue-driver-pheanstalk-bundle)
 
 ## Install
 
 ### Composer
 
-    php composer.phar require mcfedr/queuebundle
+    php composer.phar require mcfedr/queue-driver-pheanstalk-bundle
 
 ### AppKernel
 
@@ -19,22 +19,17 @@ Include the bundle in your AppKernel
     {
         $bundles = array(
             ...
-            new mcfedr\QueueBundle\mcfedrQueueBundle(),
+            new mcfedr\Queue\Driver\PheanstalkBundle\mcfedrQueueDriverPheanstalkBundle(),
 
 ## Config
 
-This is the full default configuration, you can override these values, and also add your own managers
+With this bundle installed you can setup your queue manager config similar to this:
 
-    mcfedr_queue:
+    mcfedr_queue_manager:
         managers:
             default:
                 driver: beanstalkd
-                host: 127.0.0.1
-                port: 11300
-                default_queue: mcfedr_queue
-
-
-## Usage
-
-Each manager will be a service you can access with the name `"mcfedr_queue.$name"`.
-It implements the `QueueManager` interface, where you can call just 3 simple methods.
+                options:
+                    host: 127.0.0.1
+                    port: 11300
+                    default_queue: mcfedr_queue
