@@ -25,15 +25,19 @@ class PheanstalkQueueManager implements QueueManager
     /**
      * @param array $options
      */
-    public function __construct(array $options)
+    public function __construct(array $options = [])
     {
         if (!isset($options['port'])) {
             $options['port'] = \Pheanstalk_Pheanstalk::DEFAULT_PORT;
         }
 
+        if (!isset($options['host'])) {
+            $options['host'] = '127.0.0.1';
+        }
+
         $this->pheanstalk = new \Pheanstalk_Pheanstalk(
             $options['host'],
-            $options['post']
+            $options['port']
         );
 
         if (isset($options['default_queue'])) {

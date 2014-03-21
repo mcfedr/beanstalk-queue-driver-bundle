@@ -3,6 +3,7 @@
 namespace mcfedr\Queue\Driver\PheanstalkBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -11,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class mcfedrQueueDriverPheanstalkExtension extends Extension
+class mcfedrQueueDriverPheanstalkExtension extends Extension implements PrependExtensionInterface
 {
     /**
      * {@inheritDoc}
@@ -27,10 +28,12 @@ class mcfedrQueueDriverPheanstalkExtension extends Extension
         // get all Bundles
         $bundles = $container->getParameter('kernel.bundles');
         // determine if AcmeGoodbyeBundle is registered
-        if (!isset($bundles['mcfedrQueueManagerBundle'])) {
+        if (isset($bundles['mcfedrQueueManagerBundle'])) {
             $container->prependExtensionConfig('mcfedr_queue_manager', [
                 'drivers' => [
-                    'beanstalkd' => 'mcfedr\Queue\Driver\PheanstalkBundle\Manager\PheanstalkQueueManager'
+                    'beanstalkd' => [
+                        'class' => 'mcfedr\Queue\Driver\PheanstalkBundle\Manager\PheanstalkQueueManager'
+                    ]
                 ]
             ]);
         }
