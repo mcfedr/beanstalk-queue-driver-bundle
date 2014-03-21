@@ -1,6 +1,6 @@
 <?php
 
-namespace mcfedr\Queue\QueueManagerBundle\DependencyInjection;
+namespace mcfedr\Queue\Driver\PheanstalkBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
