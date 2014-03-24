@@ -78,14 +78,19 @@ class PheanstalkQueueManager implements QueueManager
      * Get the next job from the queue
      *
      * @param string $queue optional queue name, otherwise the default queue will be used
+     * @param int $timeout
      * @return Job
      */
-    public function get($queue = null)
+    public function get($queue = null, $timeout = null)
     {
         if (!$queue) {
             $queue = $this->defaultQueue;
         }
-        return new PheanstalkJob($this->pheanstalk->watch($queue)->reserve());
+        $job = $this->pheanstalk->watch($queue)->reserve($timeout);
+        if ($job) {
+            return new PheanstalkJob($job);
+        }
+        return false;
     }
 
     /**
