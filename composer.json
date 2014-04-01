@@ -9,6 +9,9 @@
         "mcfedr/queue-manager-bundle": "~1.1",
         "pda/pheanstalk": "~2.1.0"
     },
+    "provide": {
+        "mcfedr/queue-driver": "1.0.0"
+    },
     "license": "MIT",
     "authors": [
         {
