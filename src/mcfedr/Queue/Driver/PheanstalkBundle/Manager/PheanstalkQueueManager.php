@@ -71,7 +71,8 @@ class PheanstalkQueueManager implements QueueManager
         else {
             $seconds = 0;
         }
-        $this->pheanstalk->useTube($queue)->put($jobData, $priority, $seconds);
+        $id = $this->pheanstalk->useTube($queue)->put($jobData, $priority, $seconds);
+        return new PheanstalkJob(new \Pheanstalk_Job($id, $jobData));
     }
 
     /**
