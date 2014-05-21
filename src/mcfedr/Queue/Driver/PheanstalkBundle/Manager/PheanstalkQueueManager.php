@@ -66,7 +66,7 @@ class PheanstalkQueueManager implements QueueManager
             $priority = \Pheanstalk_Pheanstalk::DEFAULT_PRIORITY;
         }
         if ($when) {
-            $seconds = $when->getTimestamp() - time();
+            $seconds = ($s = $when->getTimestamp() - time()) > 0 ? $s : 0;
         }
         else {
             $seconds = 0;
