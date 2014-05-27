@@ -6,7 +6,7 @@
     "require": {
         "php": ">=5.4.0",
         "symfony/symfony": "~2.3",
-        "mcfedr/queue-manager-bundle": "~1.1",
+        "mcfedr/queue-manager-bundle": "~1.2",
         "pda/pheanstalk": "~2.1.0"
     },
     "provide": {

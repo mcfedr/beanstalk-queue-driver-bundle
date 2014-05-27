@@ -6,6 +6,7 @@
 namespace mcfedr\Queue\Driver\PheanstalkBundle\Manager;
 
 use mcfedr\Queue\Driver\PheanstalkBundle\Queue\PheanstalkJob;
+use mcfedr\Queue\QueueManagerBundle\Exception\NoSuchJobException;
 use mcfedr\Queue\QueueManagerBundle\Manager\QueueManager;
 use mcfedr\Queue\QueueManagerBundle\Exception\WrongJobException;
 use mcfedr\Queue\QueueManagerBundle\Queue\Job;
@@ -98,6 +99,7 @@ class PheanstalkQueueManager implements QueueManager
      * Remove a job, you should call this when you have finished processing a job
      *
      * @param \mcfedr\Queue\QueueManagerBundle\Queue\Job $job
+     * @throws \mcfedr\Queue\QueueManagerBundle\Exception\NoSuchJobException
      * @throws \mcfedr\Queue\QueueManagerBundle\Exception\WrongJobException
      */
     public function delete(Job $job)
@@ -105,6 +107,10 @@ class PheanstalkQueueManager implements QueueManager
         if (!($job instanceof PheanstalkJob)) {
             throw new WrongJobException();
         }
-        $this->pheanstalk->delete($job->getJob());
+        try {
+            $this->pheanstalk->delete($job->getJob());
+        } catch (Pheanstalk_Exception_ServerException $e) {
+            throw new NoSuchJobException("Error deleting job", 0, $e);
+        }
     }
 }
