@@ -10,7 +10,7 @@
         "pda/pheanstalk": "~2.1.0"
     },
     "provide": {
-        "mcfedr/queue-driver": "1.0.0"
+        "mcfedr/queue-driver-bundle": "1.2"
     },
     "license": "MIT",
     "authors": [
