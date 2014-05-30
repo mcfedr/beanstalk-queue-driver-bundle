@@ -109,7 +109,7 @@ class PheanstalkQueueManager implements QueueManager
         }
         try {
             $this->pheanstalk->delete($job->getJob());
-        } catch (Pheanstalk_Exception_ServerException $e) {
+        } catch (\Pheanstalk_Exception_ServerException $e) {
             throw new NoSuchJobException("Error deleting job", 0, $e);
         }
     }
