@@ -1,16 +1,23 @@
 {
-    "name": "mcfedr/queue-driver-pheanstalk-bundle",
+    "name": "mcfedr/beanstalk-queue-driver-bundle",
     "type": "symfony-bundle",
     "description": "A bundle for managing job queues",
     "keywords": ["queue", "job", "schedule", "task", "beanstalkd"],
-    "require": {
-        "php": ">=5.4.0",
-        "symfony/symfony": "~2.3",
-        "mcfedr/queue-manager-bundle": "~1.2",
-        "pda/pheanstalk": "~2.1.0"
+    "autoload": {
+        "psr-4": { "Mcfedr\\BeanstalkQueueDriverBundle\\": "src/Mcfedr/BeanstalkQueueDriverBundle/"}
     },
-    "provide": {
-        "mcfedr/queue-driver-bundle": "1.2"
+    "autoload-dev": {
+        "psr-4": { "Mcfedr\\BeanstalkQueueDriverBundle\\" : "tests/Mcfedr/BeanstalkQueueDriverBundle/" }
+    },
+    "require": {
+        "php": ">=5.5",
+        "symfony/symfony": "^2.8|^3.0",
+        "mcfedr/queue-manager-bundle": "^2.2",
+        "pda/pheanstalk": "^3.1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.1",
+        "symfony/monolog-bundle": "^2.8"
     },
     "license": "MIT",
     "authors": [
@@ -18,9 +25,5 @@
             "name": "Fred Cox",
             "email": "mcfedr@gmail.com"
         }
-    ],
-    "minimum-stability": "stable",
-    "autoload": {
-        "psr-0": { "mcfedr\\Queue\\Driver\\PheanstalkBundle": "src/" }
-    }
+    ]
 }

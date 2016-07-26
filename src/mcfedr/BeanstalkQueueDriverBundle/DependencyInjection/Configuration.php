@@ -1,6 +1,6 @@
 <?php
 
-namespace mcfedr\Queue\Driver\PheanstalkBundle\DependencyInjection;
+namespace Mcfedr\BeanstalkQueueDriverBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('mcfedr_queue_driver_pheanstalk');
+        $rootNode = $treeBuilder->root('mcfedr_beanstalk_queue_driver');
 
 
         // Here you should define the parameters that are allowed to

@@ -1,9 +1,13 @@
 <?php
 
-namespace mcfedr\Queue\Driver\PheanstalkBundle\DependencyInjection;
+namespace Mcfedr\BeanstalkQueueDriverBundle\DependencyInjection;
 
+use Mcfedr\BeanstalkQueueDriverBundle\Manager\BeanstalkQueueManager;
+use Pheanstalk\Connection;
+use Pheanstalk\PheanstalkInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -12,7 +16,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class mcfedrQueueDriverPheanstalkExtension extends Extension implements PrependExtensionInterface
+class McfedrBeanstalkQueueDriverExtension extends Extension implements PrependExtensionInterface
 {
     /**
      * {@inheritDoc}
@@ -21,6 +25,9 @@ class mcfedrQueueDriverPheanstalkExtension extends Extension implements PrependE
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.yml');
     }
 
     public function prepend(ContainerBuilder $container)
@@ -32,7 +39,16 @@ class mcfedrQueueDriverPheanstalkExtension extends Extension implements PrependE
             $container->prependExtensionConfig('mcfedr_queue_manager', [
                 'drivers' => [
                     'beanstalkd' => [
-                        'class' => 'mcfedr\Queue\Driver\PheanstalkBundle\Manager\PheanstalkQueueManager'
+                        'class' => BeanstalkQueueManager::class,
+                        'options' => [
+                            'host' => '127.0.0.1',
+                            'port' => PheanstalkInterface::DEFAULT_PORT,
+                            'default_queue' => PheanstalkInterface::DEFAULT_TUBE,
+                            'connection' => [
+                                'timeout' => Connection::DEFAULT_CONNECT_TIMEOUT,
+                                'persistent' => false
+                            ]
+                        ]
                     ]
                 ]
             ]);
