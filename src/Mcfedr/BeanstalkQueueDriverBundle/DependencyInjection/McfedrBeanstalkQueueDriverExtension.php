@@ -2,6 +2,7 @@
 
 namespace Mcfedr\BeanstalkQueueDriverBundle\DependencyInjection;
 
+use Mcfedr\BeanstalkQueueDriverBundle\Command\BeanstalkCommand;
 use Mcfedr\BeanstalkQueueDriverBundle\Manager\BeanstalkQueueManager;
 use Pheanstalk\Connection;
 use Pheanstalk\PheanstalkInterface;
@@ -45,7 +46,8 @@ class McfedrBeanstalkQueueDriverExtension extends Extension implements PrependEx
                                 'timeout' => Connection::DEFAULT_CONNECT_TIMEOUT,
                                 'persistent' => false
                             ]
-                        ]
+                        ],
+                        'command_class' => BeanstalkCommand::class
                     ]
                 ]
             ]);
