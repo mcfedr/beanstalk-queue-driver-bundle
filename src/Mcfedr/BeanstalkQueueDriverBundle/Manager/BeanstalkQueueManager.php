@@ -26,7 +26,7 @@ class BeanstalkQueueManager implements QueueManager
     {
         $queue = isset($options['queue']) ? $options['queue'] : $this->defaultQueue;
         $priority = isset($options['priority']) ? $options['priority'] : PheanstalkInterface::DEFAULT_PRIORITY;
-        $seconds = isset($options['when']) ? (($s = $options['when']->getTimestamp() - time()) > 0 ? $s : 0) : PheanstalkInterface::DEFAULT_DELAY;
+        $seconds = isset($options['time']) ? (($s = $options['time']->getTimestamp() - time()) > 0 ? $s : 0) : PheanstalkInterface::DEFAULT_DELAY;
         $ttr = isset($options['ttr']) ? $options['ttr'] : PheanstalkInterface::DEFAULT_TTR;
 
         $data = [
