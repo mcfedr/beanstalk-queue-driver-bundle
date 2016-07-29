@@ -25,9 +25,6 @@ class McfedrBeanstalkQueueDriverExtension extends Extension implements PrependEx
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
     }
 
     public function prepend(ContainerBuilder $container)
@@ -35,7 +32,7 @@ class McfedrBeanstalkQueueDriverExtension extends Extension implements PrependEx
         // get all Bundles
         $bundles = $container->getParameter('kernel.bundles');
         // determine if AcmeGoodbyeBundle is registered
-        if (isset($bundles['mcfedrQueueManagerBundle'])) {
+        if (isset($bundles['McfedrQueueManagerBundle'])) {
             $container->prependExtensionConfig('mcfedr_queue_manager', [
                 'drivers' => [
                     'beanstalkd' => [

@@ -7,7 +7,7 @@ framework:
 mcfedr_queue_manager:
     managers:
         default:
-            driver: resque
+            driver: beanstalkd
             options:
                 host: 127.0.0.1
                 port: 1234
@@ -20,6 +20,6 @@ monolog:
 
 services:
     test_worker:
-        class: Mcfedr\ResqueQueueDriverBundle\Worker\TestWorker
+        class: Mcfedr\BeanstalkQueueDriverBundle\Worker\TestWorker
         arguments:
             - "@logger"

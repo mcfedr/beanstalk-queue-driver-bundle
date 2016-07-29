@@ -6,15 +6,22 @@
 namespace Mcfedr\BeanstalkQueueDriverBundle\Queue;
 
 use Mcfedr\QueueManagerBundle\Queue\AbstractJob;
+use Pheanstalk\Job;
 
 class BeanstalkJob extends AbstractJob
 {
     private $id;
 
-    public function __construct($name, array $arguments, array $options, $id)
+    /**
+     * @var Job
+     */
+    private $job;
+
+    public function __construct($name, array $arguments, array $options, $id, Job $job = null)
     {
         parent::__construct($name, $arguments, $options);
         $this->id = $id;
+        $this->job = $job;
     }
 
     /**
@@ -23,5 +30,13 @@ class BeanstalkJob extends AbstractJob
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return Job
+     */
+    public function getJob()
+    {
+        return $this->job;
     }
 }

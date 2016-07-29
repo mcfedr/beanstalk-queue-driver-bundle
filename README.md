@@ -2,14 +2,14 @@
 
 A driver for [Queue Manager Bundle](https://github.com/mcfedr/queue-manager-bundle) that uses beanstalkd
 
-[![Latest Stable Version](https://poser.pugx.org/mcfedr/queue-driver-pheanstalk-bundle/v/stable.png)](https://packagist.org/packages/mcfedr/queue-driver-pheanstalk-bundle)
-[![License](https://poser.pugx.org/mcfedr/queue-driver-pheanstalk-bundle/license.png)](https://packagist.org/packages/mcfedr/queue-driver-pheanstalk-bundle)
+[![Latest Stable Version](https://poser.pugx.org/mcfedr/beanstalk-queue-driver-bundle/v/stable.png)](https://packagist.org/packages/mcfedr/beanstalk-queue-driver-bundle)
+[![License](https://poser.pugx.org/mcfedr/beanstalk-queue-driver-bundle/license.png)](https://packagist.org/packages/mcfedr/beanstalk-queue-driver-bundle)
 
 ## Install
 
 ### Composer
 
-    php composer.phar require mcfedr/queue-driver-pheanstalk-bundle
+    php composer.phar require mcfedr/beanstalk-queue-driver-bundle
 
 ### AppKernel
 
@@ -19,7 +19,7 @@ Include the bundle in your AppKernel
     {
         $bundles = array(
             ...
-            new mcfedr\Queue\Driver\PheanstalkBundle\mcfedrQueueDriverPheanstalkBundle(),
+            new Mcfedr\BeanstalkQueueDriverBundle\McfedrBeanstalkQueueDriverBundle(),
 
 ## Config
 

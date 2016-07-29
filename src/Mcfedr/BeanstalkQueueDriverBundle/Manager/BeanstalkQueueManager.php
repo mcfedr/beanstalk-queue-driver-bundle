@@ -11,39 +11,17 @@ use Mcfedr\QueueManagerBundle\Manager\QueueManager;
 use Mcfedr\QueueManagerBundle\Exception\WrongJobException;
 use Mcfedr\QueueManagerBundle\Queue\Job;
 use Pheanstalk\Exception\ServerException;
-use Pheanstalk\Pheanstalk;
 use Pheanstalk\PheanstalkInterface;
 
 class BeanstalkQueueManager implements QueueManager
 {
-    /**
-     * @var Pheanstalk
-     */
-    private $pheanstalk;
+    use PheanstalkClientTrait;
 
-    /**
-     * @var string
-     */
-    private $defaultQueue;
-
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(array $options)
     {
-        $this->pheanstalk = new Pheanstalk(
-            $options['host'],
-            $options['port'],
-            $options['connection']['timeout'],
-            $options['connection']['persistent']
-        );
-
-        $this->defaultQueue = $options['default_queue'];
+        $this->setOptions($options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function put($name, array $arguments = [], array $options = [])
     {
         $queue = isset($options['queue']) ? $options['queue'] : $this->defaultQueue;
@@ -60,13 +38,10 @@ class BeanstalkQueueManager implements QueueManager
         return new BeanstalkJob($name, $arguments, $options, $id);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function delete(Job $job)
     {
         if (!($job instanceof BeanstalkJob)) {
-            throw new WrongJobException();
+            throw new WrongJobException('Beanstalk manager can only delete beanstalk jobs');
         }
 
         try {

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
   <parameters>
-    <parameter key="kernel.root_dir">/Users/mcfedr/dev/queue-driver-resque-bundle/tests</parameter>
+    <parameter key="kernel.root_dir">/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests</parameter>
     <parameter key="kernel.environment">test</parameter>
     <parameter key="kernel.debug">true</parameter>
     <parameter key="kernel.name">tests</parameter>
-    <parameter key="kernel.cache_dir">/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test</parameter>
-    <parameter key="kernel.logs_dir">/Users/mcfedr/dev/queue-driver-resque-bundle/tests/logs</parameter>
+    <parameter key="kernel.cache_dir">/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test</parameter>
+    <parameter key="kernel.logs_dir">/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/logs</parameter>
     <parameter key="kernel.bundles" type="collection">
       <parameter key="FrameworkBundle">Symfony\Bundle\FrameworkBundle\FrameworkBundle</parameter>
       <parameter key="MonologBundle">Symfony\Bundle\MonologBundle\MonologBundle</parameter>
       <parameter key="McfedrQueueManagerBundle">Mcfedr\QueueManagerBundle\McfedrQueueManagerBundle</parameter>
-      <parameter key="McfedrResqueQueueDriverBundle">Mcfedr\ResqueQueueDriverBundle\McfedrResqueQueueDriverBundle</parameter>
+      <parameter key="McfedrBeanstalkQueueDriverBundle">Mcfedr\BeanstalkQueueDriverBundle\McfedrBeanstalkQueueDriverBundle</parameter>
     </parameter>
     <parameter key="kernel.charset">UTF-8</parameter>
     <parameter key="kernel.container_class">testsTestDebugProjectContainer</parameter>
@@ -28,11 +28,11 @@
       <parameter key="cookie_httponly">true</parameter>
       <parameter key="gc_probability">1</parameter>
     </parameter>
-    <parameter key="session.save_path">/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test/sessions</parameter>
+    <parameter key="session.save_path">/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/sessions</parameter>
     <parameter key="session.metadata.update_threshold">0</parameter>
     <parameter key="data_collector.templates" type="collection"/>
     <parameter key="debug.error_handler.throw_at">-1</parameter>
-    <parameter key="debug.container.dump">/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test/testsTestDebugProjectContainer.xml</parameter>
+    <parameter key="debug.container.dump">/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/testsTestDebugProjectContainer.xml</parameter>
     <parameter key="monolog.logger.class">Symfony\Bridge\Monolog\Logger</parameter>
     <parameter key="monolog.gelf.publisher.class">Gelf\MessagePublisher</parameter>
     <parameter key="monolog.gelfphp.publisher.class">Gelf\Publisher</parameter>
@@ -40,6 +40,7 @@
     <parameter key="monolog.handler.console.class">Symfony\Bridge\Monolog\Handler\ConsoleHandler</parameter>
     <parameter key="monolog.handler.group.class">Monolog\Handler\GroupHandler</parameter>
     <parameter key="monolog.handler.buffer.class">Monolog\Handler\BufferHandler</parameter>
+    <parameter key="monolog.handler.deduplication.class">Monolog\Handler\DeduplicationHandler</parameter>
     <parameter key="monolog.handler.rotating_file.class">Monolog\Handler\RotatingFileHandler</parameter>
     <parameter key="monolog.handler.syslog.class">Monolog\Handler\SyslogHandler</parameter>
     <parameter key="monolog.handler.syslogudp.class">Monolog\Handler\SyslogUdpHandler</parameter>
@@ -74,14 +75,27 @@
     <parameter key="monolog.mongo.client.class">MongoClient</parameter>
     <parameter key="monolog.handler.elasticsearch.class">Monolog\Handler\ElasticSearchHandler</parameter>
     <parameter key="monolog.elastica.client.class">Elastica\Client</parameter>
+    <parameter key="monolog.use_microseconds">true</parameter>
     <parameter key="monolog.swift_mailer.handlers" type="collection"/>
     <parameter key="monolog.handlers_to_channels" type="collection">
       <parameter key="monolog.handler.main">null</parameter>
     </parameter>
+    <parameter key="mcfedr_queue_manager.default.options" type="collection">
+      <parameter key="debug">false</parameter>
+      <parameter key="retry_limit">3</parameter>
+      <parameter key="sleep_seconds">5</parameter>
+      <parameter key="host">127.0.0.1</parameter>
+      <parameter key="port">1234</parameter>
+      <parameter key="default_queue">mcfedr_queue</parameter>
+      <parameter key="connection" type="collection">
+        <parameter key="timeout">2</parameter>
+        <parameter key="persistent">false</parameter>
+      </parameter>
+    </parameter>
     <parameter key="console.command.ids" type="collection"/>
   </parameters>
   <services>
-    <service id="test_worker" class="Mcfedr\ResqueQueueDriverBundle\Worker\TestWorker">
+    <service id="test_worker" class="Mcfedr\BeanstalkQueueDriverBundle\Worker\TestWorker">
       <argument type="service" id="logger"/>
     </service>
     <service id="response_listener" class="Symfony\Component\HttpKernel\EventListener\ResponseListener">
@@ -102,10 +116,14 @@
       <argument type="service" id="translator"/>
       <argument type="service" id="request_stack"/>
     </service>
+    <service id="validate_request_listener" class="Symfony\Component\HttpKernel\EventListener\ValidateRequestListener">
+      <tag name="kernel.event_subscriber"/>
+    </service>
     <service id="http_kernel" class="Symfony\Component\HttpKernel\HttpKernel">
       <argument type="service" id="debug.event_dispatcher"/>
       <argument type="service" id="debug.controller_resolver"/>
       <argument type="service" id="request_stack"/>
+      <argument type="service" id="debug.argument_resolver"/>
     </service>
     <service id="request_stack" class="Symfony\Component\HttpFoundation\RequestStack"/>
     <service id="cache_warmer" class="Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerAggregate">
@@ -123,16 +141,55 @@
       <tag name="kernel.cache_warmer"/>
     </service>
     <service id="cache_clearer" class="Symfony\Component\HttpKernel\CacheClearer\ChainCacheClearer">
-      <argument type="collection"/>
+      <argument type="collection">
+        <argument type="service">
+          <service class="Symfony\Component\HttpKernel\CacheClearer\Psr6CacheClearer" public="false">
+            <tag name="kernel.cache_clearer"/>
+            <call method="addPool">
+              <argument type="service" id="cache.app"/>
+            </call>
+            <call method="addPool">
+              <argument type="service" id="cache.system"/>
+            </call>
+            <call method="addPool">
+              <argument type="service">
+                <service class="Symfony\Component\Cache\Adapter\AdapterInterface" public="false">
+                  <tag name="cache.pool"/>
+                  <argument>0qXWK01qtO</argument>
+                  <argument></argument>
+                  <argument>wtmzJOx5x1iUDnEw-trxjw</argument>
+                  <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/pools</argument>
+                  <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
+                  <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
+                </service>
+              </argument>
+            </call>
+            <call method="addPool">
+              <argument type="service">
+                <service class="Symfony\Component\Cache\Adapter\AdapterInterface" public="false">
+                  <tag name="cache.pool"/>
+                  <argument>A0-0kSJTOs</argument>
+                  <argument></argument>
+                  <argument>wtmzJOx5x1iUDnEw-trxjw</argument>
+                  <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/pools</argument>
+                  <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
+                  <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
+                </service>
+              </argument>
+            </call>
+          </service>
+        </argument>
+      </argument>
     </service>
     <service id="service_container" synthetic="true">
       <autowiring-type>Symfony\Component\DependencyInjection\ContainerInterface</autowiring-type>
+      <autowiring-type>Symfony\Component\DependencyInjection\Container</autowiring-type>
     </service>
     <service id="kernel" synthetic="true"/>
     <service id="filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
     <service id="file_locator" class="Symfony\Component\HttpKernel\Config\FileLocator">
       <argument type="service" id="kernel"/>
-      <argument>/Users/mcfedr/dev/queue-driver-resque-bundle/tests/Resources</argument>
+      <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/Resources</argument>
     </service>
     <service id="uri_signer" class="Symfony\Component\HttpKernel\UriSigner">
       <argument>fake_secret</argument>
@@ -237,13 +294,14 @@
         </argument>
       </argument>
       <argument type="collection">
-        <argument key="cache_dir">/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test/translations</argument>
+        <argument key="cache_dir">/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/translations</argument>
         <argument key="debug">true</argument>
       </argument>
       <argument type="collection"/>
       <call method="setConfigCacheFactory">
         <argument type="service" id="config_cache_factory"/>
       </call>
+      <autowiring-type>Symfony\Component\Translation\TranslatorInterface</autowiring-type>
     </service>
     <service id="translator" class="Symfony\Component\Translation\IdentityTranslator">
       <argument type="service" id="translator.selector"/>
@@ -417,6 +475,24 @@
       <argument>false</argument>
       <argument>false</argument>
     </service>
+    <service id="cache.app" class="Symfony\Component\Cache\Adapter\FilesystemAdapter">
+      <tag name="cache.pool"/>
+      <argument>3r6yhWj0CS</argument>
+      <argument></argument>
+      <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/pools</argument>
+      <call method="setLogger">
+        <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
+      </call>
+    </service>
+    <service id="cache.system" class="Symfony\Component\Cache\Adapter\AdapterInterface">
+      <tag name="cache.pool"/>
+      <argument>ViwVgFgDS6</argument>
+      <argument></argument>
+      <argument>wtmzJOx5x1iUDnEw-trxjw</argument>
+      <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/pools</argument>
+      <argument type="service" id="monolog.logger.cache" on-invalid="ignore"/>
+      <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
+    </service>
     <service id="test.client" class="Symfony\Bundle\FrameworkBundle\Client" shared="false">
       <argument type="service" id="kernel"/>
       <argument type="collection"/>
@@ -502,6 +578,10 @@
         <argument>Symfony\Component\HttpKernel\EventListener\TranslatorListener</argument>
       </call>
       <call method="addSubscriberService">
+        <argument>validate_request_listener</argument>
+        <argument>Symfony\Component\HttpKernel\EventListener\ValidateRequestListener</argument>
+      </call>
+      <call method="addSubscriberService">
         <argument>test.session.listener</argument>
         <argument>Symfony\Bundle\FrameworkBundle\EventListener\TestSessionListener</argument>
       </call>
@@ -537,6 +617,39 @@
         </service>
       </argument>
       <argument type="service" id="debug.stopwatch"/>
+      <argument type="service" id="debug.argument_resolver"/>
+    </service>
+    <service id="debug.argument_resolver" class="Symfony\Component\HttpKernel\Controller\TraceableArgumentResolver">
+      <argument type="service">
+        <service class="Symfony\Component\HttpKernel\Controller\ArgumentResolver" public="false">
+          <argument type="service">
+            <service class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory" public="false"/>
+          </argument>
+          <argument type="collection">
+            <argument type="service">
+              <service class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestAttributeValueResolver" public="false">
+                <tag name="controller.argument_value_resolver" priority="100"/>
+              </service>
+            </argument>
+            <argument type="service">
+              <service class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestValueResolver" public="false">
+                <tag name="controller.argument_value_resolver" priority="50"/>
+              </service>
+            </argument>
+            <argument type="service">
+              <service class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" public="false">
+                <tag name="controller.argument_value_resolver" priority="-100"/>
+              </service>
+            </argument>
+            <argument type="service">
+              <service class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver" public="false">
+                <tag name="controller.argument_value_resolver" priority="-150"/>
+              </service>
+            </argument>
+          </argument>
+        </service>
+      </argument>
+      <argument type="service" id="debug.stopwatch"/>
     </service>
     <service id="monolog.handler.main" class="Symfony\Bridge\Monolog\Handler\ConsoleHandler">
       <tag name="kernel.event_subscriber"/>
@@ -544,19 +657,30 @@
       <argument>true</argument>
       <argument type="collection"/>
     </service>
-    <service id="mcfedr_queue_manager.default" class="Mcfedr\ResqueQueueDriverBundle\Manager\ResqueQueueManager">
+    <service id="mcfedr_queue_manager.job_executor" class="Mcfedr\QueueManagerBundle\Runner\JobExecutor">
+      <call method="setContainer">
+        <argument type="service" id="service_container"/>
+      </call>
+    </service>
+    <service id="mcfedr_queue_manager.default" class="Mcfedr\BeanstalkQueueDriverBundle\Manager\BeanstalkQueueManager">
       <argument type="collection">
         <argument key="debug">false</argument>
+        <argument key="retry_limit">3</argument>
+        <argument key="sleep_seconds">5</argument>
         <argument key="host">127.0.0.1</argument>
         <argument key="port">1234</argument>
-        <argument key="kernel_options" type="collection">
-          <argument key="kernel.root_dir">/Users/mcfedr/dev/queue-driver-resque-bundle/tests</argument>
-          <argument key="kernel.environment">test</argument>
-          <argument key="kernel.debug">true</argument>
-        </argument>
-        <argument key="track_status">false</argument>
         <argument key="default_queue">mcfedr_queue</argument>
+        <argument key="connection" type="collection">
+          <argument key="timeout">2</argument>
+          <argument key="persistent">false</argument>
+        </argument>
       </argument>
+    </service>
+    <service id="mcfedr_queue_manager.registry" class="Mcfedr\QueueManagerBundle\Manager\QueueManagerRegistry">
+      <argument type="collection">
+        <argument key="default" type="service" id="mcfedr_queue_manager.default"/>
+      </argument>
+      <argument>default</argument>
     </service>
     <service id="monolog.logger.request" class="Symfony\Bridge\Monolog\Logger">
       <argument>request</argument>
@@ -566,6 +690,12 @@
     </service>
     <service id="monolog.logger.translation" class="Symfony\Bridge\Monolog\Logger">
       <argument>translation</argument>
+      <call method="pushHandler">
+        <argument type="service" id="monolog.handler.main"/>
+      </call>
+    </service>
+    <service id="monolog.logger.cache" class="Symfony\Bridge\Monolog\Logger">
+      <argument>cache</argument>
       <call method="pushHandler">
         <argument type="service" id="monolog.handler.main"/>
       </call>
@@ -583,29 +713,40 @@
       </call>
     </service>
     <service id="session.storage.filesystem" class="Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage">
-      <argument>/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test/sessions</argument>
+      <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/sessions</argument>
       <argument>MOCKSESSID</argument>
       <argument type="service" id="session.storage.metadata_bag"/>
     </service>
     <service id="session.handler" class="Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler">
-      <argument>/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test/sessions</argument>
+      <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/sessions</argument>
+    </service>
+    <service id="cache.default_redis_provider" class="Redis">
+      <argument>redis://localhost</argument>
+      <factory class="Symfony\Component\Cache\Adapter\RedisAdapter" method="createConnection"/>
     </service>
     <service id="annotation_reader" class="Doctrine\Common\Annotations\CachedReader">
       <argument type="service">
-        <service class="Doctrine\Common\Annotations\AnnotationReader" public="false"/>
+        <service class="Doctrine\Common\Annotations\AnnotationReader" public="false">
+          <autowiring-type>Doctrine\Common\Annotations\Reader</autowiring-type>
+        </service>
       </argument>
       <argument type="service">
         <service class="Doctrine\Common\Cache\FilesystemCache" public="false">
-          <argument>/Users/mcfedr/dev/queue-driver-resque-bundle/tests/cache/test/annotations</argument>
+          <argument>/Users/mcfedr/dev/queue/beanstalk-queue-driver-bundle/tests/cache/test/annotations</argument>
         </service>
       </argument>
       <argument>true</argument>
+      <autowiring-type>Doctrine\Common\Annotations\Reader</autowiring-type>
     </service>
     <service id="logger" class="Symfony\Bridge\Monolog\Logger">
       <argument>app</argument>
+      <call method="useMicrosecondTimestamps">
+        <argument>true</argument>
+      </call>
       <call method="pushHandler">
         <argument type="service" id="monolog.handler.main"/>
       </call>
+      <autowiring-type>Psr\Log\LoggerInterface</autowiring-type>
     </service>
     <service id="session.storage" alias="session.storage.filesystem"/>
     <service id="event_dispatcher" alias="debug.event_dispatcher"/>
