@@ -28,7 +28,7 @@ class BeanstalkCommand extends RunnerCommand
     {
         parent::configure();
         $this
-            ->addOption('queue', InputOption::VALUE_REQUIRED, 'The queue to watch, can be a comma separated list');
+            ->addOption('queue', null, InputOption::VALUE_REQUIRED, 'The queue to watch, can be a comma separated list');
     }
 
     protected function handleInput(InputInterface $input)
