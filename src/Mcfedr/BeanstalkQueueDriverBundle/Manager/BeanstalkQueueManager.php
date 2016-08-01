@@ -34,7 +34,7 @@ class BeanstalkQueueManager implements QueueManager
             'arguments' => $arguments
         ];
 
-        $id = $this->pheanstalk->useTube($queue)->put($data, $priority, $seconds, $ttr);
+        $id = $this->pheanstalk->useTube($queue)->put(json_encode($data), $priority, $seconds, $ttr);
         return new BeanstalkJob($name, $arguments, $options, $id);
     }
 

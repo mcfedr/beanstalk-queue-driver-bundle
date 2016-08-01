@@ -45,7 +45,7 @@ class BeanstalkCommand extends RunnerCommand
     protected function getJobs()
     {
         $job = $this->pheanstalk->reserve();
-        $data = $job->getData();
+        $data = json_decode($job->getData(), true);
 
         return [new BeanstalkJob($data['name'], $data['arguments'], [], $job->getId(), $job)];
     }
