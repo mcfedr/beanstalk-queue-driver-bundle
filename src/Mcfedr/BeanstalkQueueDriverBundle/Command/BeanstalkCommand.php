@@ -48,6 +48,8 @@ class BeanstalkCommand extends RunnerCommand
         $job = $this->pheanstalk->reserve();
         $data = json_decode($job->getData(), true);
         if (!isset($data['name']) || !isset($data['arguments']) || !isset($data['retryCount']) || !isset($data['priority']) || !isset($data['ttr'])) {
+            $this->pheanstalk->delete($job);
+
             throw new UnexpectedJobDataException('Beanstalkd message missing data fields name, arguments, retryCount, priority and ttr');
         }
 
