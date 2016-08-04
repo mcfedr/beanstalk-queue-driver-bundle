@@ -8,6 +8,7 @@ namespace Mcfedr\BeanstalkQueueDriverBundle\Command;
 use Mcfedr\BeanstalkQueueDriverBundle\Manager\PheanstalkClientTrait;
 use Mcfedr\BeanstalkQueueDriverBundle\Queue\BeanstalkJob;
 use Mcfedr\QueueManagerBundle\Command\RunnerCommand;
+use Mcfedr\QueueManagerBundle\Exception\UnexpectedJobDataException;
 use Mcfedr\QueueManagerBundle\Manager\QueueManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -46,27 +47,29 @@ class BeanstalkCommand extends RunnerCommand
     {
         $job = $this->pheanstalk->reserve();
         $data = json_decode($job->getData(), true);
+        if (!isset($data['name']) || !isset($data['arguments']) || !isset($data['retryCount']) || !isset($data['priority']) || !isset($data['ttr'])) {
+            throw new UnexpectedJobDataException('Beanstalkd message missing data fields name, arguments, retryCount, priority and ttr');
+        }
 
-        return [new BeanstalkJob($data['name'], $data['arguments'], [], $job->getId(), $job)];
+        return [new BeanstalkJob($data['name'], $data['arguments'], $data['priority'], $data['ttr'], $job->getId(), $data['retryCount'], $job)];
     }
 
     protected function finishJobs(array $okJobs, array $retryJobs, array $failedJobs)
     {
         /** @var BeanstalkJob $job */
-        foreach ($okJobs as $job)
-        {
+        foreach ($okJobs as $job) {
             $this->pheanstalk->delete($job->getJob());
         }
 
         /** @var BeanstalkJob $job */
-        foreach ($retryJobs as $job)
-        {
-            $this->pheanstalk->release($job->getJob());
+        foreach ($retryJobs as $job)  {
+            $this->pheanstalk->delete($job->getJob());
+            $job->incrementRetryCount();
+            $this->pheanstalk->put($job->getData(), $job->getPriority(), $job->getRetryCount() * $job->getRetryCount() * 30, $job->getTtr());
         }
 
         /** @var BeanstalkJob $job */
-        foreach ($failedJobs as $job)
-        {
+        foreach ($failedJobs as $job) {
             $this->pheanstalk->delete($job->getJob());
         }
     }

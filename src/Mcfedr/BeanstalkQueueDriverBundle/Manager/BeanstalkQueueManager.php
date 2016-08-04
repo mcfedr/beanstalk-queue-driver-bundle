@@ -29,13 +29,11 @@ class BeanstalkQueueManager implements QueueManager
         $seconds = isset($options['time']) ? (($s = $options['time']->getTimestamp() - time()) > 0 ? $s : 0) : PheanstalkInterface::DEFAULT_DELAY;
         $ttr = isset($options['ttr']) ? $options['ttr'] : PheanstalkInterface::DEFAULT_TTR;
 
-        $data = [
-            'name' => $name,
-            'arguments' => $arguments
-        ];
+        $job = new BeanstalkJob($name, $arguments, $priority, $ttr);
+        $id = $this->pheanstalk->useTube($queue)->put($job->getData(), $priority, $seconds, $ttr);
+        $job->setId($id);
 
-        $id = $this->pheanstalk->useTube($queue)->put(json_encode($data), $priority, $seconds, $ttr);
-        return new BeanstalkJob($name, $arguments, $options, $id);
+        return $job;
     }
 
     public function delete(Job $job)
