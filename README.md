@@ -33,3 +33,12 @@ With this bundle installed you can setup your queue manager config similar to th
                     host: 127.0.0.1
                     port: 11300
                     default_queue: mcfedr_queue
+
+## Options to `QueueManager::put`
+
+* `queue` - The name of the queue to put the job in
+* `priority` - The job priority
+* `ttr` - Beanstalk Time to run, the time given for a job to finish before it is repeated
+* `time` - A `\DateTime` object of when to schedule this job
+* `delay` - Number of seconds from now to schedule this job
+
