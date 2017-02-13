@@ -9,11 +9,9 @@ use Mcfedr\QueueManagerBundle\Exception\UnexpectedJobDataException;
 use Mcfedr\QueueManagerBundle\Manager\QueueManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 class BeanstalkCommand extends RunnerCommand
 {
-    use ContainerAwareTrait;
     use PheanstalkClientTrait;
 
     public function __construct($name, array $options, QueueManager $queueManager)
