@@ -1,7 +1,4 @@
 <?php
-/**
- * Created by mcfedr on 21/03/2014 11:30
- */
 
 namespace Mcfedr\BeanstalkQueueDriverBundle\Queue;
 
@@ -49,11 +46,13 @@ class BeanstalkJob extends AbstractRetryableJob
 
     /**
      * @param int $id
+     *
      * @return BeanstalkJob
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 

@@ -1,9 +1,10 @@
-# Pheanstalk Queue Driver Bundle
+# Beanstalk Queue Driver Bundle
 
 A driver for [Queue Manager Bundle](https://github.com/mcfedr/queue-manager-bundle) that uses beanstalkd
 
 [![Latest Stable Version](https://poser.pugx.org/mcfedr/beanstalk-queue-driver-bundle/v/stable.png)](https://packagist.org/packages/mcfedr/beanstalk-queue-driver-bundle)
 [![License](https://poser.pugx.org/mcfedr/beanstalk-queue-driver-bundle/license.png)](https://packagist.org/packages/mcfedr/beanstalk-queue-driver-bundle)
+[![Build Status](https://travis-ci.org/mcfedr/beanstalk-queue-driver-bundle.svg?branch=master)](https://travis-ci.org/mcfedr/beanstalk-queue-driver-bundle)
 
 ## Install
 

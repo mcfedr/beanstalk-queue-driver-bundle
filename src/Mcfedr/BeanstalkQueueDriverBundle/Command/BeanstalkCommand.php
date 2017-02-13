@@ -1,7 +1,4 @@
 <?php
-/**
- * Created by mcfedr on 05/02/2016 21:26
- */
 
 namespace Mcfedr\BeanstalkQueueDriverBundle\Command;
 
@@ -64,7 +61,7 @@ class BeanstalkCommand extends RunnerCommand
         }
 
         /** @var BeanstalkJob $job */
-        foreach ($retryJobs as $job)  {
+        foreach ($retryJobs as $job) {
             $this->pheanstalk->delete($job->getJob());
             $job->incrementRetryCount();
             $this->pheanstalk->put($job->getData(), $job->getPriority(), $job->getRetryCount() * $job->getRetryCount() * 30, $job->getTtr());

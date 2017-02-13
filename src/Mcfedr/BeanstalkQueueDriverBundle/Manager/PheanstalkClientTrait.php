@@ -1,7 +1,5 @@
 <?php
-/**
- * Created by mcfedr on 7/29/16 17:46
- */
+
 namespace Mcfedr\BeanstalkQueueDriverBundle\Manager;
 
 use Pheanstalk\Pheanstalk;

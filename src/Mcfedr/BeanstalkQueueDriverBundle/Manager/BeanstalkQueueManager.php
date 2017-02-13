@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by mcfedr on 21/03/2014 11:07
- */
 
 namespace Mcfedr\BeanstalkQueueDriverBundle\Manager;
 
 use Mcfedr\BeanstalkQueueDriverBundle\Queue\BeanstalkJob;
 use Mcfedr\QueueManagerBundle\Exception\NoSuchJobException;
-use Mcfedr\QueueManagerBundle\Manager\QueueManager;
 use Mcfedr\QueueManagerBundle\Exception\WrongJobException;
+use Mcfedr\QueueManagerBundle\Manager\QueueManager;
 use Mcfedr\QueueManagerBundle\Queue\Job;
 use Pheanstalk\Exception\ServerException;
 use Pheanstalk\PheanstalkInterface;
@@ -51,7 +48,7 @@ class BeanstalkQueueManager implements QueueManager
         try {
             $this->pheanstalk->delete($job->getId());
         } catch (ServerException $e) {
-            throw new NoSuchJobException("Error deleting job", 0, $e);
+            throw new NoSuchJobException('Error deleting job', 0, $e);
         }
     }
 }
