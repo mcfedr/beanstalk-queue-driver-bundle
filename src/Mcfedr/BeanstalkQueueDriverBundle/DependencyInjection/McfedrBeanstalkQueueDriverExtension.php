@@ -42,12 +42,12 @@ class McfedrBeanstalkQueueDriverExtension extends Extension implements PrependEx
                             'default_queue' => PheanstalkInterface::DEFAULT_TUBE,
                             'connection' => [
                                 'timeout' => Connection::DEFAULT_CONNECT_TIMEOUT,
-                                'persistent' => false
-                            ]
+                                'persistent' => false,
+                            ],
                         ],
-                        'command_class' => BeanstalkCommand::class
-                    ]
-                ]
+                        'command_class' => BeanstalkCommand::class,
+                    ],
+                ],
             ]);
         }
     }

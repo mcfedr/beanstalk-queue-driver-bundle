@@ -87,7 +87,7 @@ class BeanstalkJob extends AbstractRetryableJob
             'arguments' => $this->getArguments(),
             'retryCount' => $this->getRetryCount(),
             'priority' => $this->getPriority(),
-            'ttr' => $this->getTtr()
+            'ttr' => $this->getTtr(),
         ]);
     }
 }
