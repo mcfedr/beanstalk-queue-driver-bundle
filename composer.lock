@@ -460,16 +460,16 @@
         },
         {
             "name": "mcfedr/queue-manager-bundle",
-            "version": "5.3.1",
+            "version": "5.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcfedr/queue-manager-bundle.git",
-                "reference": "bafa9defffc903a26c2cdb5f427f6f9f76be8a1e"
+                "reference": "c29131f6df3262bcaf309ffc4c72513a4b5aeef6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcfedr/queue-manager-bundle/zipball/bafa9defffc903a26c2cdb5f427f6f9f76be8a1e",
-                "reference": "bafa9defffc903a26c2cdb5f427f6f9f76be8a1e",
+                "url": "https://api.github.com/repos/mcfedr/queue-manager-bundle/zipball/c29131f6df3262bcaf309ffc4c72513a4b5aeef6",
+                "reference": "c29131f6df3262bcaf309ffc4c72513a4b5aeef6",
                 "shasum": ""
             },
             "require": {
@@ -477,9 +477,11 @@
                 "symfony/symfony": "^2.8|^3.0"
             },
             "require-dev": {
+                "doctrine/doctrine-bundle": "^1.6",
                 "friendsofphp/php-cs-fixer": "^2.1",
                 "phpunit/phpunit": "^4.1",
-                "symfony/monolog-bundle": "^2.8|^3.0"
+                "symfony/monolog-bundle": "^2.8|^3.0",
+                "symfony/swiftmailer-bundle": "^2.3|^3.0"
             },
             "suggest": {
                 "mcfedr/beanstalk-queue-driver-bundle": "A driver for beanstalkd",
@@ -512,7 +514,7 @@
                 "schedule",
                 "task"
             ],
-            "time": "2017-02-13T18:30:52+00:00"
+            "time": "2017-07-19T07:23:28+00:00"
         },
         {
             "name": "paragonie/random_compat",
